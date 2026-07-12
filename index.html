@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <title>Hub — Chefrel Baracol</title>
+        <meta name="description" content="Launcher for Chefrel Baracol's apps, tools, and case studies" />
+        <meta name="theme-color" content="#0c0e16" />
+        <link rel="manifest" href="manifest.json" />
+        <link rel="icon" href="icon-192.png" />
+        <link rel="apple-touch-icon" href="icon-192.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+        <style>
+            :root {
+                --bg-deep: #0c0e16;
+                --bg-desk: #080a10;
+                --panel: #12141f;
+                --panel-2: #181b29;
+                --line: #242838;
+                --cyan: #5eead4;
+                --violet: #8b7cf6;
+                --amber: #f6c177;
+                --coral: #fb7185;
+                --text: #f1f3f8;
+                --muted: #8a8fa3;
+                --muted-2: #5a5f74;
+                --font-display: "Space Grotesk", sans-serif;
+                --font-body: "Inter", sans-serif;
+                --font-mono: "JetBrains Mono", monospace;
+            }
+            * {
+                box-sizing: border-box;
+                -webkit-tap-highlight-color: transparent;
+            }
+            html,
+            body {
+                height: 100%;
+            }
+            body {
+                margin: 0;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background:
+                    radial-gradient(circle at 1px 1px, #1c2030 1.4px, transparent 1.4px) 0 0/22px 22px,
+                    var(--bg-desk);
+                font-family: var(--font-body);
+                color: var(--text);
+                padding: 28px 12px;
+                overflow-x: hidden;
+            }
+
+            /* ---------- Phone frame ---------- */
+            .phone {
+                position: relative;
+                width: 380px;
+                max-width: 94vw;
+                height: 800px;
+                max-height: 92vh;
+                background: linear-gradient(160deg, #1a1d2b, #0e1019);
+                border-radius: 52px;
+                padding: 14px;
+                box-shadow:
+                    0 0 0 2px #2a2f42,
+                    0 30px 60px -20px rgba(0, 0, 0, 0.7),
+                    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+            }
+            .phone::before {
+                /* side button */
+                content: "";
+                position: absolute;
+                right: -3px;
+                top: 150px;
+                width: 3px;
+                height: 70px;
+                border-radius: 3px;
+                background: #2a2f42;
+            }
+            .screen {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                background: radial-gradient(120% 60% at 50% -10%, #1b1f34 0%, transparent 60%), linear-gradient(180deg, #0f1119, #0a0b12 60%);
+                border-radius: 38px;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+            }
+            .notch {
+                position: absolute;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 120px;
+                height: 26px;
+                background: #05060a;
+                border-radius: 16px;
+                z-index: 30;
+            }
+
+            /* ---------- Status bar ---------- */
+            .statusbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 14px 26px 4px;
+                font-family: var(--font-mono);
+                font-size: 13px;
+                letter-spacing: 0.02em;
+                color: var(--text);
+                flex-shrink: 0;
+            }
+            .statusbar .right {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--muted);
+            }
+            .offline-chip {
+                display: none;
+                align-items: center;
+                gap: 5px;
+                background: rgba(251, 113, 133, 0.12);
+                color: var(--coral);
+                border: 1px solid rgba(251, 113, 133, 0.3);
+                padding: 2px 8px 2px 6px;
+                border-radius: 20px;
+                font-size: 10.5px;
+                font-family: var(--font-body);
+                font-weight: 600;
+            }
+            .offline-chip.show {
+                display: inline-flex;
+            }
+            .offline-chip::before {
+                content: "";
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--coral);
+            }
+
+            /* ---------- Header / install ---------- */
+            .header {
+                padding: 6px 22px 14px;
+                flex-shrink: 0;
+            }
+            .header h1 {
+                font-family: var(--font-display);
+                font-size: 22px;
+                margin: 0 0 2px;
+                font-weight: 600;
+                letter-spacing: -0.01em;
+            }
+            .header p {
+                margin: 0;
+                font-size: 12.5px;
+                color: var(--muted);
+            }
+            .install-row {
+                margin-top: 12px;
+                display: flex;
+                gap: 8px;
+            }
+            .install-btn {
+                display: none;
+                align-items: center;
+                gap: 7px;
+                background: linear-gradient(135deg, var(--cyan), #34c9b0);
+                color: #06251f;
+                border: none;
+                padding: 8px 14px;
+                border-radius: 12px;
+                font-family: var(--font-body);
+                font-weight: 600;
+                font-size: 12.5px;
+                cursor: pointer;
+            }
+            .install-btn.show {
+                display: inline-flex;
+            }
+            .install-btn:active {
+                transform: scale(0.96);
+            }
+            .install-hint {
+                display: none;
+                align-items: center;
+                font-size: 11.5px;
+                color: var(--muted);
+                background: var(--panel);
+                border: 1px solid var(--line);
+                padding: 7px 12px;
+                border-radius: 12px;
+            }
+            .install-hint.show {
+                display: inline-flex;
+            }
+
+            /* ---------- Search ---------- */
+            .search-wrap {
+                padding: 0 22px 14px;
+                flex-shrink: 0;
+            }
+            .search {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 16px;
+                padding: 10px 14px;
+            }
+            .search svg {
+                flex-shrink: 0;
+                opacity: 0.55;
+            }
+            .search input {
+                flex: 1;
+                background: none;
+                border: none;
+                outline: none;
+                color: var(--text);
+                font-family: var(--font-body);
+                font-size: 14px;
+            }
+            .search input::placeholder {
+                color: var(--muted-2);
+            }
+
+            /* ---------- Grid ---------- */
+            .grid-scroll {
+                flex: 1;
+                overflow-y: auto;
+                padding: 4px 18px 10px;
+            }
+            .grid-scroll::-webkit-scrollbar {
+                width: 0;
+            }
+            .app-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                row-gap: 18px;
+                column-gap: 4px;
+            }
+            .app-tile {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: 4px 2px;
+                font-family: var(--font-body);
+                -webkit-user-select: none;
+                user-select: none;
+            }
+            .app-icon {
+                position: relative;
+                width: 56px;
+                height: 56px;
+                border-radius: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                overflow: hidden;
+                box-shadow:
+                    0 6px 14px -6px rgba(0, 0, 0, 0.55),
+                    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+            }
+            .app-tile:active .app-icon {
+                transform: scale(0.9);
+            }
+            .app-icon {
+                transition: transform 0.15s ease;
+            }
+            .app-label {
+                font-size: 11px;
+                color: var(--muted);
+                text-align: center;
+                line-height: 1.25;
+                max-width: 70px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .ripple {
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.5);
+                transform: scale(0);
+                opacity: 0.6;
+                animation: ripple 0.55s ease-out forwards;
+                pointer-events: none;
+            }
+            @keyframes ripple {
+                to {
+                    transform: scale(2.6);
+                    opacity: 0;
+                }
+            }
+
+            .empty-state {
+                text-align: center;
+                padding: 40px 20px;
+                color: var(--muted-2);
+                font-size: 13px;
+            }
+
+            /* ---------- Dock ---------- */
+            .dock-wrap {
+                flex-shrink: 0;
+                padding: 8px 16px 4px;
+            }
+            .dock {
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                background: rgba(24, 27, 41, 0.75);
+                backdrop-filter: blur(14px);
+                border: 1px solid var(--line);
+                border-radius: 24px;
+                padding: 10px 8px;
+            }
+            .dock .app-tile {
+                padding: 0;
+            }
+            .dock .app-icon {
+                width: 46px;
+                height: 46px;
+                font-size: 20px;
+                border-radius: 14px;
+            }
+            .dock .app-label {
+                display: none;
+            }
+            .home-indicator {
+                width: 120px;
+                height: 4px;
+                border-radius: 3px;
+                background: #2c3145;
+                margin: 10px auto 4px;
+            }
+
+            /* ---------- App overlay (fullscreen "app") ---------- */
+            .app-overlay {
+                position: absolute;
+                inset: 0;
+                background: var(--bg-deep);
+                display: flex;
+                flex-direction: column;
+                transform: scale(0.15);
+                opacity: 0;
+                transform-origin: 50% 50%;
+                transition:
+                    transform 0.32s cubic-bezier(0.22, 0.68, 0.35, 1),
+                    opacity 0.22s ease;
+                z-index: 50;
+                border-radius: 38px;
+                overflow: hidden;
+                pointer-events: none;
+            }
+            .app-overlay.open {
+                transform: scale(1);
+                opacity: 1;
+                pointer-events: auto;
+            }
+            .app-toolbar {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 16px 14px 10px;
+                background: var(--panel);
+                border-bottom: 1px solid var(--line);
+                flex-shrink: 0;
+            }
+            .app-toolbar button {
+                background: var(--panel-2);
+                border: 1px solid var(--line);
+                color: var(--text);
+                width: 32px;
+                height: 32px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+            }
+            .app-toolbar .name {
+                flex: 1;
+                font-family: var(--font-display);
+                font-size: 14px;
+                font-weight: 600;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .save-btn.saved {
+                color: var(--cyan);
+                border-color: rgba(94, 234, 212, 0.4);
+            }
+            .app-overlay iframe {
+                flex: 1;
+                width: 100%;
+                border: none;
+                background: #fff;
+            }
+            .offline-fallback {
+                flex: 1;
+                display: none;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                padding: 30px;
+                text-align: center;
+                color: var(--muted);
+                font-size: 13px;
+            }
+            .offline-fallback.show {
+                display: flex;
+            }
+
+            @media (max-width: 400px) {
+                .phone {
+                    height: 96vh;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="phone">
+            <div class="notch"></div>
+            <div class="screen" id="screen">
+                <div class="statusbar">
+                    <span id="clock">--:--</span>
+                    <span class="right">
+                        <span class="offline-chip" id="offlineChip">Offline</span>
+                        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor">
+                            <path
+                                d="M8 9.5a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8Zm0-3.2c1.5 0 2.9.6 4 1.6l-1.2 1.3A4 4 0 0 0 8 8.2c-1.1 0-2.1.4-2.8 1L4 7.9a6 6 0 0 1 4-1.6Zm0-3.3c2.4 0 4.6.9 6.3 2.5l-1.2 1.3A8 8 0 0 0 8 5.5a8 8 0 0 0-5.1 1.9L1.7 6a9.6 9.6 0 0 1 6.3-2.5Z"
+                            />
+                        </svg>
+                        <svg width="20" height="11" viewBox="0 0 20 11" fill="none">
+                            <rect x=".5" y=".5" width="17" height="10" rx="2.5" stroke="currentColor" />
+                            <rect x="2" y="2" width="12" height="7" rx="1.3" fill="currentColor" />
+                            <path d="M19 4v3" stroke="currentColor" stroke-linecap="round" />
+                        </svg>
+                    </span>
+                </div>
+
+                <div class="header">
+                    <h1>Hub</h1>
+                    <p>Chefrel Baracol — apps &amp; projects</p>
+                    <div class="install-row">
+                        <button class="install-btn" id="installBtn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 3v13m0 0-4-4m4 4 4-4M5 20h14" /></svg>
+                            Install app
+                        </button>
+                        <span class="install-hint" id="installHint">Add to Home Screen from Safari's share menu</span>
+                    </div>
+                </div>
+
+                <div class="search-wrap">
+                    <div class="search">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <circle cx="11" cy="11" r="7" />
+                            <path d="m21 21-4.3-4.3" />
+                        </svg>
+                        <input id="searchInput" type="text" placeholder="Search apps" autocomplete="off" />
+                    </div>
+                </div>
+
+                <div class="grid-scroll">
+                    <div class="app-grid" id="appGrid"></div>
+                    <div class="empty-state" id="emptyState" style="display: none">No apps match your search.</div>
+                </div>
+
+                <div class="dock-wrap">
+                    <div class="dock" id="dock"></div>
+                    <div class="home-indicator"></div>
+                </div>
+
+                <div class="app-overlay" id="appOverlay">
+                    <div class="app-toolbar">
+                        <button id="backBtn" aria-label="Back">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m15 18-6-6 6-6" /></svg>
+                        </button>
+                        <span class="name" id="overlayName">App</span>
+                        <button class="save-btn" id="saveBtn" aria-label="Save for offline" title="Save for offline">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                                <path d="M12 3v12m0 0-4-4m4 4 4-4" />
+                                <path d="M5 21h14" />
+                            </svg>
+                        </button>
+                    </div>
+                    <iframe id="appFrame" title="App content"></iframe>
+                    <div class="offline-fallback" id="offlineFallback">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M3 3l18 18M8.5 16.5a7 7 0 0 1 7-3.3M5 12.5a11 11 0 0 1 3-2.1M12 20h.01" />
+                        </svg>
+                        <div>You're offline and this app hasn't been saved yet.<br />Open it once while online, then tap the save icon.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            /* =========================================================
+   1. APP DATA — edit this list to add/remove/reorder apps.
+   - icon: any emoji, used inside the generated gradient tile
+   - external:true opens in a new browser tab instead of the
+     in-app iframe (use for links that block iframing, e.g.
+     GitHub, mailto:, other origins with X-Frame-Options)
+   - pinned:true puts the app in the bottom dock (max ~5)
+   ========================================================= */
+            const APPS = [
+                { id: "portfolio", name: "Portfolio", url: "https://chefbarac.github.io/portfolio/", icon: "💼", pinned: true },
+                { id: "resume", name: "Resume", url: "https://chefbarac.github.io/portfolio/resume.html", icon: "📄", pinned: true },
+                { id: "ukay", name: "Ukay Finds", url: "https://chefbarac.github.io/ukayfinds/", icon: "👕", pinned: true },
+                { id: "finstate", name: "Fin. Statements", url: "#", icon: "📊", pinned: true },
+                { id: "akari", name: "Akari Migrate", url: "#", icon: "🔄" },
+                { id: "multicab", name: "Multicab Booking", url: "#", icon: "🚐" },
+                { id: "github", name: "GitHub", url: "https://github.com/chefbarac", icon: "🐙", external: true },
+                { id: "contact", name: "Contact", url: "mailto:chefrel.baracol@gmain.com", icon: "✉️", external: true },
+            ];
+
+            /* =========================================================
+   2. Icon gradients — a curated Material-You-ish palette,
+   assigned deterministically per app so colors stay stable.
+   ========================================================= */
+            const GRADIENTS = [
+                "linear-gradient(135deg,#5eead4,#0891b2)",
+                "linear-gradient(135deg,#8b7cf6,#4338ca)",
+                "linear-gradient(135deg,#f6c177,#c2410c)",
+                "linear-gradient(135deg,#fb7185,#9d174d)",
+                "linear-gradient(135deg,#a3e635,#3f6212)",
+                "linear-gradient(135deg,#60a5fa,#1e3a8a)",
+            ];
+            function gradientFor(id) {
+                let h = 0;
+                for (const c of id) h = (h * 31 + c.charCodeAt(0)) % 997;
+                return GRADIENTS[h % GRADIENTS.length];
+            }
+
+            /* =========================================================
+   3. Render grid + dock
+   ========================================================= */
+            const grid = document.getElementById("appGrid");
+            const dock = document.getElementById("dock");
+            const emptyState = document.getElementById("emptyState");
+
+            function tile(app) {
+                const el = document.createElement("button");
+                el.className = "app-tile";
+                el.innerHTML = `
+    <span class="app-icon" style="background:${gradientFor(app.id)}">${app.icon}</span>
+    <span class="app-label">${app.name}</span>`;
+                el.addEventListener("pointerdown", ripple);
+                el.addEventListener("click", () => openApp(app, el.querySelector(".app-icon")));
+                return el;
+            }
+
+            function renderGrid(filter = "") {
+                grid.innerHTML = "";
+                const f = filter.trim().toLowerCase();
+                const list = APPS.filter((a) => a.name.toLowerCase().includes(f));
+                list.forEach((a) => grid.appendChild(tile(a)));
+                emptyState.style.display = list.length ? "none" : "block";
+            }
+            function renderDock() {
+                dock.innerHTML = "";
+                APPS.filter((a) => a.pinned)
+                    .slice(0, 5)
+                    .forEach((a) => dock.appendChild(tile(a)));
+            }
+            renderGrid();
+            renderDock();
+
+            document.getElementById("searchInput").addEventListener("input", (e) => renderGrid(e.target.value));
+
+            function ripple(e) {
+                const icon = e.currentTarget.querySelector(".app-icon");
+                const r = document.createElement("span");
+                const rect = icon.getBoundingClientRect();
+                const size = rect.width;
+                r.className = "ripple";
+                r.style.width = r.style.height = size + "px";
+                r.style.left = e.clientX - rect.left - size / 2 + "px";
+                r.style.top = e.clientY - rect.top - size / 2 + "px";
+                icon.appendChild(r);
+                setTimeout(() => r.remove(), 550);
+            }
+
+            /* =========================================================
+   4. App overlay — iframe viewer with Android-style zoom-open
+   ========================================================= */
+            const overlay = document.getElementById("appOverlay");
+            const frame = document.getElementById("appFrame");
+            const overlayName = document.getElementById("overlayName");
+            const backBtn = document.getElementById("backBtn");
+            const saveBtn = document.getElementById("saveBtn");
+            const offlineFallback = document.getElementById("offlineFallback");
+            let currentApp = null;
+
+            function openApp(app, iconEl) {
+                if (app.url === "#") {
+                    pulseUnready(iconEl);
+                    return;
+                }
+                if (app.external) {
+                    window.open(app.url, "_blank", "noopener");
+                    return;
+                }
+
+                currentApp = app;
+                overlayName.textContent = app.name;
+                saveBtn.classList.remove("saved");
+                offlineFallback.classList.remove("show");
+                frame.style.display = "block";
+                frame.src = app.url;
+
+                // FLIP-style zoom from the tapped icon's position
+                const r = iconEl.getBoundingClientRect();
+                const s = overlay.getBoundingClientRect();
+                const originX = ((r.left + r.width / 2 - s.left) / s.width) * 100;
+                const originY = ((r.top + r.height / 2 - s.top) / s.height) * 100;
+                overlay.style.transformOrigin = `${originX}% ${originY}%`;
+                requestAnimationFrame(() => overlay.classList.add("open"));
+
+                if (!navigator.onLine) {
+                    frame.style.display = "none";
+                    offlineFallback.classList.add("show");
+                }
+            }
+            function pulseUnready(iconEl) {
+                iconEl.animate([{ transform: "scale(1)" }, { transform: "scale(.85)" }, { transform: "scale(1)" }], { duration: 220 });
+            }
+            function closeApp() {
+                overlay.classList.remove("open");
+                setTimeout(() => {
+                    frame.src = "about:blank";
+                }, 300);
+                currentApp = null;
+            }
+            backBtn.addEventListener("click", closeApp);
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") closeApp();
+            });
+
+            saveBtn.addEventListener("click", () => {
+                if (!currentApp || !("serviceWorker" in navigator)) return;
+                navigator.serviceWorker.ready.then((reg) => {
+                    reg.active?.postMessage({ type: "CACHE_URL", url: currentApp.url });
+                    saveBtn.classList.add("saved");
+                });
+            });
+
+            /* =========================================================
+   5. Live clock
+   ========================================================= */
+            function tick() {
+                const d = new Date();
+                document.getElementById("clock").textContent = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+            }
+            tick();
+            setInterval(tick, 15000);
+
+            /* =========================================================
+   6. Offline indicator
+   ========================================================= */
+            function updateOnlineState() {
+                document.getElementById("offlineChip").classList.toggle("show", !navigator.onLine);
+                if (!navigator.onLine && currentApp && frame.style.display !== "none") {
+                    // leave existing loaded page as-is; only new loads show fallback
+                }
+            }
+            window.addEventListener("online", updateOnlineState);
+            window.addEventListener("offline", updateOnlineState);
+            updateOnlineState();
+
+            /* =========================================================
+   7. PWA install — intercept prompt, show custom button
+   ========================================================= */
+            let deferredPrompt = null;
+            const installBtn = document.getElementById("installBtn");
+            const installHint = document.getElementById("installHint");
+            const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+
+            window.addEventListener("beforeinstallprompt", (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                if (!isStandalone) installBtn.classList.add("show");
+            });
+
+            installBtn.addEventListener("click", async () => {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                installBtn.classList.remove("show");
+            });
+
+            window.addEventListener("appinstalled", () => {
+                installBtn.classList.remove("show");
+                installHint.classList.remove("show");
+            });
+
+            // iOS Safari has no beforeinstallprompt — show manual instructions instead
+            const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            if (isIOS && !isStandalone) installHint.classList.add("show");
+
+            /* =========================================================
+   8. Register service worker (offline app shell + caching)
+   ========================================================= */
+            if ("serviceWorker" in navigator) {
+                window.addEventListener("load", () => {
+                    navigator.serviceWorker.register("sw.js").catch((err) => console.warn("Service worker registration failed:", err));
+                });
+            }
+        </script>
+    </body>
+</html>
