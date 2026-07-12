@@ -1,15 +1,15 @@
 {
-  "name": "Chefrel Baracol — Hub",
-  "short_name": "Hub",
-  "description": "Launcher for Chefrel Baracol's apps, tools, and case studies",
-  "start_url": "./index.html",
-  "scope": "./",
-  "display": "standalone",
-  "background_color": "#0c0e16",
-  "theme_color": "#0c0e16",
-  "orientation": "portrait-primary",
-  "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-  ]
+    "name": "Chefrel Baracol — Hub",
+    "short_name": "Hub",
+    "description": "Launcher for Chefrel Baracol's apps, tools, and case studies",
+    "start_url": "./index.html",
+    "scope": "./",
+    "display": "standalone",
+    "background_color": "#0c0e16",
+    "theme_color": "#0c0e16",
+    "orientation": "portrait-primary",
+    "icons": [
+        { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+        { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    ]
 }

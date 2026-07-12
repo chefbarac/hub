@@ -505,11 +505,19 @@
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m15 18-6-6 6-6" /></svg>
                         </button>
                         <span class="name" id="overlayName">App</span>
+                        <!-- TODO: cleanup this into Open in External mode button -->
                         <button class="save-btn" id="saveBtn" aria-label="Save for offline" title="Save for offline">
+                            <!-- External Icon -->
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                <path d="M15 3h6v6" />
+                                <path d="M10 14 21 3" />
+                            </svg>
+                            <!-- Save Icon -->
+                            <!-- <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                                 <path d="M12 3v12m0 0-4-4m4 4 4-4" />
                                 <path d="M5 21h14" />
-                            </svg>
+                            </svg> -->
                         </button>
                     </div>
                     <iframe id="appFrame" title="App content"></iframe>
@@ -525,16 +533,16 @@
 
         <script>
             /* =========================================================
-                        1. APP DATA — edit this list to add/remove/reorder apps.
-                        - icon: any emoji, used inside the generated gradient tile
-                        - external:true opens in a new browser tab instead of the
-                          in-app iframe (use for links that block iframing, e.g.
-                          GitHub, mailto:, other origins with X-Frame-Options)
-                        - pinned:true puts the app in the bottom dock (max ~5)
-                        ========================================================= */
+            1. APP DATA — edit this list to add/remove/reorder apps.
+            - icon: any emoji, used inside the generated gradient tile
+            - external:true opens in a new browser tab instead of the
+              in-app iframe (use for links that block iframing, e.g.
+              GitHub, mailto:, other origins with X-Frame-Options)
+            - pinned:true puts the app in the bottom dock (max ~5)
+            ========================================================= */
             const APPS = [
-                { id: "portfolio", name: "Portfolio", url: "https://chefbarac.github.io/portfolio/?source=hub", icon: "💼", external: true, pinned: true },
-                { id: "resume", name: "Resume", url: "https://chefbarac.github.io/portfolio/resume.pdf", icon: "📄", pinned: true, external: true },
+                { id: "portfolio", name: "Portfolio", url: "https://chefbarac.github.io/portfolio/?source=hub", icon: "💼", pinned: true },
+                { id: "resume", name: "Resume", url: "https://chefbarac.github.io/portfolio/resume.pdf", icon: "📄", pinned: true },
                 { id: "github", name: "GitHub", url: "https://github.com/chefbarac", icon: "🐙", external: true, pinned: true },
                 { id: "contact", name: "Contact", url: "mailto:chefrel.baracol@gmail.com", icon: "✉️", external: true, pinned: true },
                 { id: "ukay", name: "Ukay Finds", url: "https://chefbarac.github.io/ukayfinds/?source=hub", icon: "👕", external: true },
@@ -545,9 +553,9 @@
             ];
 
             /* =========================================================
-                        2. Icon gradients — a curated Material-You-ish palette,
-                        assigned deterministically per app so colors stay stable.
-                        ========================================================= */
+            2. Icon gradients — a curated Material-You-ish palette,
+            assigned deterministically per app so colors stay stable.
+            ========================================================= */
             const GRADIENTS = [
                 "linear-gradient(135deg,#5eead4,#0891b2)",
                 "linear-gradient(135deg,#8b7cf6,#4338ca)",
@@ -563,8 +571,8 @@
             }
 
             /* =========================================================
-                        3. Render grid + dock
-                        ========================================================= */
+            3. Render grid + dock
+            ========================================================= */
             const grid = document.getElementById("appGrid");
             const dock = document.getElementById("dock");
             const emptyState = document.getElementById("emptyState");
@@ -573,8 +581,8 @@
                 const el = document.createElement("button");
                 el.className = "app-tile";
                 el.innerHTML = `
-                         <span class="app-icon" style="background:${gradientFor(app.id)}">${app.icon}</span>
-                         <span class="app-label">${app.name}</span>`;
+             <span class="app-icon" style="background:${gradientFor(app.id)}">${app.icon}</span>
+             <span class="app-label">${app.name}</span>`;
                 el.addEventListener("pointerdown", ripple);
                 el.addEventListener("click", () => openApp(app, el.querySelector(".app-icon")));
                 return el;
@@ -612,8 +620,8 @@
             }
 
             /* =========================================================
-                        4. App overlay — iframe viewer with Android-style zoom-open
-                        ========================================================= */
+            4. App overlay — iframe viewer with Android-style zoom-open
+            ========================================================= */
             const overlay = document.getElementById("appOverlay");
             const frame = document.getElementById("appFrame");
             const overlayName = document.getElementById("overlayName");
@@ -622,7 +630,7 @@
             const offlineFallback = document.getElementById("offlineFallback");
             let currentApp = null;
 
-            async function openApp(app, iconEl) {
+            function openApp(app, iconEl) {
                 if (app.url === "#") {
                     pulseUnready(iconEl);
                     return;
@@ -647,16 +655,9 @@
                 overlay.style.transformOrigin = `${originX}% ${originY}%`;
                 requestAnimationFrame(() => overlay.classList.add("open"));
 
-                const cache = await caches.open(CACHE_NAME);
-                const cached = await cache.match(currentApp.url);
-
-                if (!navigator.onLine && !cached) {
+                if (!navigator.onLine) {
                     frame.style.display = "none";
                     offlineFallback.classList.add("show");
-                } else {
-                    frame.style.display = "block";
-                    offlineFallback.classList.remove("show");
-                    frame.src = currentApp.url;
                 }
             }
             function pulseUnready(iconEl) {
@@ -674,8 +675,11 @@
                 if (e.key === "Escape") closeApp();
             });
 
+            //TODO: Open in External mode
             saveBtn.addEventListener("click", async () => {
-                if (!currentApp || !("serviceWorker" in navigator)) return;
+                window.open(currentApp.url, "_blank", "noopener,noreferrer");
+
+                /* if (!currentApp || !("serviceWorker" in navigator)) return;
                 const reg = await navigator.serviceWorker.ready;
 
                 navigator.serviceWorker.ready.then((reg) => {
@@ -685,12 +689,12 @@
                         url: currentApp.url,
                     });
                     saveBtn.classList.add("saved");
-                });
+                });*/
             });
 
             /* =========================================================
-                        5. Live clock
-                        ========================================================= */
+            5. Live clock
+            ========================================================= */
             function tick() {
                 const d = new Date();
                 document.getElementById("clock").textContent = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -699,8 +703,8 @@
             setInterval(tick, 15000);
 
             /* =========================================================
-                        6. Offline indicator
-                        ========================================================= */
+            6. Offline indicator
+            ========================================================= */
             function updateOnlineState() {
                 document.getElementById("offlineChip").classList.toggle("show", !navigator.onLine);
                 if (!navigator.onLine && currentApp && frame.style.display !== "none") {
@@ -712,8 +716,8 @@
             updateOnlineState();
 
             /* =========================================================
-                        7. PWA install — intercept prompt, show custom button
-                        ========================================================= */
+            7. PWA install — intercept prompt, show custom button
+            ========================================================= */
             let deferredPrompt = null;
             const installBtn = document.getElementById("installBtn");
             const installHint = document.getElementById("installHint");
@@ -746,8 +750,8 @@
             if (isIOS && !isStandalone) installHint.classList.add("show");
 
             /* =========================================================
-                        8. Register service worker (offline app shell + caching)
-                        ========================================================= */
+            8. Register service worker (offline app shell + caching)
+            ========================================================= */
             if ("serviceWorker" in navigator) {
                 window.addEventListener("load", () => {
                     navigator.serviceWorker.register("sw.js").catch((err) => console.warn("Service worker registration failed:", err));
