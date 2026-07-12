@@ -1,6 +1,17 @@
 <!doctype html>
 <html lang="en">
     <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-T01ZZ6L53Q"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
+
+            gtag("config", "G-T01ZZ6L53Q");
+        </script>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <title>Hub — Chefrel Baracol</title>
@@ -522,12 +533,12 @@
    - pinned:true puts the app in the bottom dock (max ~5)
    ========================================================= */
             const APPS = [
-                { id: "portfolio", name: "Portfolio", url: "https://chefbarac.github.io/portfolio/", icon: "💼", external: true, pinned: true },
+                { id: "portfolio", name: "Portfolio", url: "https://chefbarac.github.io/portfolio/?source=hub", icon: "💼", external: true, pinned: true },
                 { id: "resume", name: "Resume", url: "https://chefbarac.github.io/portfolio/resume.pdf", icon: "📄", pinned: true, external: true },
                 { id: "github", name: "GitHub", url: "https://github.com/chefbarac", icon: "🐙", external: true, pinned: true },
                 { id: "contact", name: "Contact", url: "mailto:chefrel.baracol@gmail.com", icon: "✉️", external: true, pinned: true },
-                { id: "ukay", name: "Ukay Finds", url: "https://chefbarac.github.io/ukayfinds/", icon: "👕", external: true },
-                { id: "lifequote", name: "Life Quotes", url: "https://chefbarac.github.io/lifequote/", icon: '""' },
+                { id: "ukay", name: "Ukay Finds", url: "https://chefbarac.github.io/ukayfinds/?source=hub", icon: "👕", external: true },
+                { id: "lifequote", name: "Life Quotes", url: "https://chefbarac.github.io/lifequote/?source=hub", icon: '""' },
                 //{ id: "finstate", name: "Fin. Statements", url: "#", icon: "📊", pinned: true },
                 //{ id: "akari", name: "Akari Migrate", url: "#", icon: "🔄" },
                 //{ id: "multicab", name: "Multicab Booking", url: "#", icon: "🚐" },
@@ -703,6 +714,9 @@
 
             installBtn.addEventListener("click", async () => {
                 if (!deferredPrompt) return;
+                gtag("event", "button_click", {
+                    button_name: "install_pwa",
+                });
                 deferredPrompt.prompt();
                 await deferredPrompt.userChoice;
                 deferredPrompt = null;
