@@ -541,33 +541,110 @@
             - pinned:true puts the app in the bottom dock (max ~5)
             ========================================================= */
             const APPS = [
-                { id: "portfolio", name: "Portfolio", url: "https://chefbarac.github.io/portfolio/?source=hub", icon: "💼", pinned: true },
-                { id: "resume", name: "Resume", url: "https://chefbarac.github.io/portfolio/resume.pdf", icon: "📄", pinned: true },
-                { id: "github", name: "GitHub", url: "https://github.com/chefbarac", icon: "🐙", external: true, pinned: true },
-                { id: "contact", name: "Contact", url: "mailto:chefrel.baracol@gmail.com", icon: "✉️", external: true, pinned: true },
-                { id: "ukay", name: "Ukay Finds", url: "https://chefbarac.github.io/ukayfinds/?source=hub", icon: "👕", external: true },
-                { id: "lifequote", name: "Life Quotes", url: "https://chefbarac.github.io/lifequote/?source=hub", icon: '""' },
+                { id: "land", name: "Landing Page", url: "https://chefbarac.github.io/?source=hub", icon: "🛬", textColor: "#6B7280", pinned: true },
+                { id: "portfolio", name: "Portfolio", url: "https://chefbarac.github.io/portfolio/?source=hub", icon: "💼", textColor: "#7B4B2A", pinned: true },
+                { id: "resume", name: "Resume", url: "https://chefbarac.github.io/portfolio/resume.pdf", icon: "📄", textColor: "#F8FAFC", pinned: true },
+                { id: "github", name: "GitHub", url: "https://github.com/chefbarac", icon: "🐙", textColor: "#E2557A", external: true, pinned: true },
+                { id: "contact", name: "Contact", url: "mailto:chefrel.baracol@gmail.com", icon: "✉️", textColor: "#F3E9D2", external: true, pinned: true },
+                { id: "ukayfinds", name: "Ukay Finds", url: "https://chefbarac.github.io/ukayfinds/?source=hub", icon: "👕", textColor: "#4A90E2", external: true },
+                { id: "lifequote", name: "Life Quotes", url: "https://chefbarac.github.io/lifequote/?source=hub", icon: '""', textColor: "#111827" },
                 //{ id: "finstate", name: "Fin. Statements", url: "#", icon: "📊", pinned: true },
                 //{ id: "akari", name: "Akari Migrate", url: "#", icon: "🔄" },
                 //{ id: "multicab", name: "Multicab Booking", url: "#", icon: "🚐" },
             ];
 
+            document.addEventListener("DOMContentLoaded", () => {
+                const params = new URLSearchParams(window.location.search);
+                const appId = params.get("app");
+
+                const app = APPS.find((a) => a.id === appId);
+
+                if (app) {
+                    setTimeout(() => openApp(app, document.querySelector(`#icon-${app.id}`)), 1000);
+                }
+            });
+
             /* =========================================================
             2. Icon gradients — a curated Material-You-ish palette,
             assigned deterministically per app so colors stay stable.
             ========================================================= */
-            const GRADIENTS = [
-                "linear-gradient(135deg,#5eead4,#0891b2)",
-                "linear-gradient(135deg,#8b7cf6,#4338ca)",
-                "linear-gradient(135deg,#f6c177,#c2410c)",
-                "linear-gradient(135deg,#fb7185,#9d174d)",
-                "linear-gradient(135deg,#a3e635,#3f6212)",
-                "linear-gradient(135deg,#60a5fa,#1e3a8a)",
-            ];
-            function gradientFor(id) {
-                let h = 0;
-                for (const c of id) h = (h * 31 + c.charCodeAt(0)) % 997;
-                return GRADIENTS[h % GRADIENTS.length];
+
+            function gradientFor(id, { textColor = "#ffffff", minContrast = 3 } = {}) {
+                // Generate a hash
+                let hash = 0;
+                for (const c of id) {
+                    hash = (hash * 31 + c.charCodeAt(0)) >>> 0;
+                }
+
+                const hue1 = hash % 360;
+                // Keep the two hues far enough apart to read as distinct, but not clashing
+                const hue2 = (hue1 + 40 + ((hash >> 8) % 80)) % 360;
+
+                // Moderate, consistent saturation avoids neon tones that hurt legibility
+                const sat1 = 55 + ((hash >> 16) % 15); // 55-69%
+                const sat2 = 55 + ((hash >> 20) % 15); // 55-69%
+
+                // Starting lightness guesses; will be corrected for real contrast below
+                let light1 = 45 + ((hash >> 24) % 10); // 45-54%
+                let light2 = 30 + ((hash >> 28) % 10); // 30-39%
+
+                light1 = ensureContrast(hue1, sat1, light1, textColor, minContrast);
+                light2 = ensureContrast(hue2, sat2, light2, textColor, minContrast);
+
+                return {
+                    css: `linear-gradient(135deg, hsl(${hue1}, ${sat1}%, ${light1}%), hsl(${hue2}, ${sat2}%, ${light2}%))`,
+                    textColor,
+                };
+            }
+
+            // --- contrast helpers ---
+
+            function hslToRgb(h, s, l) {
+                s /= 100;
+                l /= 100;
+                const k = (n) => (n + h / 30) % 12;
+                const a = s * Math.min(l, 1 - l);
+                const f = (n) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+                return [255 * f(0), 255 * f(8), 255 * f(4)];
+            }
+
+            function relativeLuminance([r, g, b]) {
+                const [R, G, B] = [r, g, b].map((v) => {
+                    v /= 255;
+                    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+                });
+                return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+            }
+
+            function hexToRgb(hex) {
+                const n = parseInt(hex.replace("#", ""), 16);
+                return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+            }
+
+            function contrastRatio(rgb1, rgb2) {
+                const L1 = relativeLuminance(rgb1);
+                const L2 = relativeLuminance(rgb2);
+                const [lighter, darker] = L1 > L2 ? [L1, L2] : [L2, L1];
+                return (lighter + 0.05) / (darker + 0.05);
+            }
+
+            // Nudges lightness down (or up, if text is dark) in small steps until
+            // the color meets minContrast against textColor.
+            function ensureContrast(h, s, l, textColor, minContrast) {
+                const textRgb = hexToRgb(textColor);
+                const textIsLight = relativeLuminance(textRgb) > 0.5;
+                let lightness = l;
+                let rgb = hslToRgb(h, s, lightness);
+
+                let guard = 0;
+                while (contrastRatio(rgb, textRgb) < minContrast && guard < 100) {
+                    lightness += textIsLight ? -1 : 1; // darken bg for light text, lighten for dark text
+                    lightness = Math.max(5, Math.min(95, lightness));
+                    rgb = hslToRgb(h, s, lightness);
+                    guard++;
+                    if (lightness <= 5 || lightness >= 95) break; // safety bound
+                }
+                return Math.round(lightness);
             }
 
             /* =========================================================
@@ -581,7 +658,7 @@
                 const el = document.createElement("button");
                 el.className = "app-tile";
                 el.innerHTML = `
-             <span class="app-icon" style="background:${gradientFor(app.id)}">${app.icon}</span>
+             <span id="icon-${app.id}" class="app-icon" style="background:${gradientFor(app.id, { textColor: app.textColor })?.css}">${app.icon}</span>
              <span class="app-label">${app.name}</span>`;
                 el.addEventListener("pointerdown", ripple);
                 el.addEventListener("click", () => openApp(app, el.querySelector(".app-icon")));
@@ -654,13 +731,9 @@
                 const originY = ((r.top + r.height / 2 - s.top) / s.height) * 100;
                 overlay.style.transformOrigin = `${originX}% ${originY}%`;
                 requestAnimationFrame(() => overlay.classList.add("open"));
-
-                if (!navigator.onLine) {
-                    frame.style.display = "none";
-                    offlineFallback.classList.add("show");
-                }
             }
             function pulseUnready(iconEl) {
+                if (!iconEl) return;
                 iconEl.animate([{ transform: "scale(1)" }, { transform: "scale(.85)" }, { transform: "scale(1)" }], { duration: 220 });
             }
             function closeApp() {
