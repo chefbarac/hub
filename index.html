@@ -525,13 +525,13 @@
 
         <script>
             /* =========================================================
-   1. APP DATA — edit this list to add/remove/reorder apps.
-   - icon: any emoji, used inside the generated gradient tile
-   - external:true opens in a new browser tab instead of the
-     in-app iframe (use for links that block iframing, e.g.
-     GitHub, mailto:, other origins with X-Frame-Options)
-   - pinned:true puts the app in the bottom dock (max ~5)
-   ========================================================= */
+            1. APP DATA — edit this list to add/remove/reorder apps.
+            - icon: any emoji, used inside the generated gradient tile
+            - external:true opens in a new browser tab instead of the
+              in-app iframe (use for links that block iframing, e.g.
+              GitHub, mailto:, other origins with X-Frame-Options)
+            - pinned:true puts the app in the bottom dock (max ~5)
+            ========================================================= */
             const APPS = [
                 { id: "portfolio", name: "Portfolio", url: "https://chefbarac.github.io/portfolio/?source=hub", icon: "💼", external: true, pinned: true },
                 { id: "resume", name: "Resume", url: "https://chefbarac.github.io/portfolio/resume.pdf", icon: "📄", pinned: true, external: true },
@@ -545,9 +545,9 @@
             ];
 
             /* =========================================================
-   2. Icon gradients — a curated Material-You-ish palette,
-   assigned deterministically per app so colors stay stable.
-   ========================================================= */
+            2. Icon gradients — a curated Material-You-ish palette,
+            assigned deterministically per app so colors stay stable.
+            ========================================================= */
             const GRADIENTS = [
                 "linear-gradient(135deg,#5eead4,#0891b2)",
                 "linear-gradient(135deg,#8b7cf6,#4338ca)",
@@ -563,8 +563,8 @@
             }
 
             /* =========================================================
-   3. Render grid + dock
-   ========================================================= */
+            3. Render grid + dock
+            ========================================================= */
             const grid = document.getElementById("appGrid");
             const dock = document.getElementById("dock");
             const emptyState = document.getElementById("emptyState");
@@ -573,8 +573,8 @@
                 const el = document.createElement("button");
                 el.className = "app-tile";
                 el.innerHTML = `
-    <span class="app-icon" style="background:${gradientFor(app.id)}">${app.icon}</span>
-    <span class="app-label">${app.name}</span>`;
+             <span class="app-icon" style="background:${gradientFor(app.id)}">${app.icon}</span>
+             <span class="app-label">${app.name}</span>`;
                 el.addEventListener("pointerdown", ripple);
                 el.addEventListener("click", () => openApp(app, el.querySelector(".app-icon")));
                 return el;
@@ -612,8 +612,8 @@
             }
 
             /* =========================================================
-   4. App overlay — iframe viewer with Android-style zoom-open
-   ========================================================= */
+            4. App overlay — iframe viewer with Android-style zoom-open
+            ========================================================= */
             const overlay = document.getElementById("appOverlay");
             const frame = document.getElementById("appFrame");
             const overlayName = document.getElementById("overlayName");
@@ -667,17 +667,23 @@
                 if (e.key === "Escape") closeApp();
             });
 
-            saveBtn.addEventListener("click", () => {
+            saveBtn.addEventListener("click", async () => {
                 if (!currentApp || !("serviceWorker" in navigator)) return;
+                const reg = await navigator.serviceWorker.ready;
+
                 navigator.serviceWorker.ready.then((reg) => {
-                    reg.active?.postMessage({ type: "CACHE_URL", url: currentApp.url });
+                    // reg.active?.postMessage({ type: "CACHE_URL", url: currentApp.url });
+                    navigator.serviceWorker.controller?.postMessage({
+                        type: "CACHE_URL",
+                        url: currentApp.url,
+                    });
                     saveBtn.classList.add("saved");
                 });
             });
 
             /* =========================================================
-   5. Live clock
-   ========================================================= */
+            5. Live clock
+            ========================================================= */
             function tick() {
                 const d = new Date();
                 document.getElementById("clock").textContent = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -686,8 +692,8 @@
             setInterval(tick, 15000);
 
             /* =========================================================
-   6. Offline indicator
-   ========================================================= */
+            6. Offline indicator
+            ========================================================= */
             function updateOnlineState() {
                 document.getElementById("offlineChip").classList.toggle("show", !navigator.onLine);
                 if (!navigator.onLine && currentApp && frame.style.display !== "none") {
@@ -699,8 +705,8 @@
             updateOnlineState();
 
             /* =========================================================
-   7. PWA install — intercept prompt, show custom button
-   ========================================================= */
+            7. PWA install — intercept prompt, show custom button
+            ========================================================= */
             let deferredPrompt = null;
             const installBtn = document.getElementById("installBtn");
             const installHint = document.getElementById("installHint");
@@ -733,8 +739,8 @@
             if (isIOS && !isStandalone) installHint.classList.add("show");
 
             /* =========================================================
-   8. Register service worker (offline app shell + caching)
-   ========================================================= */
+            8. Register service worker (offline app shell + caching)
+            ========================================================= */
             if ("serviceWorker" in navigator) {
                 window.addEventListener("load", () => {
                     navigator.serviceWorker.register("sw.js").catch((err) => console.warn("Service worker registration failed:", err));
