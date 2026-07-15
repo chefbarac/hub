@@ -1,5 +1,5 @@
 const PREFIX = 'hub-cache';
-const CACHE_NAME = PREFIX + '-v1';
+const CACHE_NAME = PREFIX + '-v1.0.1';
 const SHELL = [
     './',
     './index.html',
