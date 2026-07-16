@@ -1,8 +1,7 @@
 const PREFIX = 'hub-cache';
-const CACHE_NAME = PREFIX + '-v1.0.1';
+const CACHE_NAME = PREFIX + '-v1.0.2';
 const SHELL = [
     './',
-    './index.html',
     './script.js',
     './style.css',
     './manifest.json',
@@ -26,34 +25,23 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch: stale-while-revalidate. Serves cache instantly if present,
-// updates the cache in the background, and falls back to cache when offline.
-// This also transparently caches whatever pages get loaded into the app iframe.
 self.addEventListener('fetch', (event) => {
-    if (event.request.method !== 'GET') return;
-
-    event.respondWith(
-        caches.match(event.request).then((cached) => {
-            const network = fetch(event.request)
-                .then((response) => {
-                    if (response && response.status === 200 && response.type !== 'opaque') {
-                        const clone = response.clone();
-                        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-                    }
-                    return response;
-                })
-                .catch(() => cached);
-            return cached || network;
-        })
-    );
+    const { request } = event;
+    if (request.method !== 'GET') return;
+    event.respondWith(cacheFirst(request));
 });
 
-// Let the page ask us to pre-cache a specific URL (e.g. "save offline" on an app tile)
-self.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'CACHE_URL' && event.data.url) {
-        caches.open(CACHE_NAME).then((cache) =>
-            fetch(event.data.url).then((res) => res.ok && cache.put(event.data.url, res))
-        );
+async function cacheFirst(request) {
+    const cache = await caches.open(CACHE_NAME);
+    const cachedResponse = await cache.match(request);
+
+    // Have it cached — serve it, no network call at all.
+    if (cachedResponse) return cachedResponse;
+
+    // Not cached yet — fetch from network and cache for next time.
+    const networkResponse = await fetch(request);
+    if (networkResponse && networkResponse.status === 200) {
+        cache.put(request, networkResponse.clone());
     }
-});
-
+    return networkResponse;
+}
