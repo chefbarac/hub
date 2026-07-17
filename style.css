@@ -243,6 +243,7 @@ body {
     font-family: var(--font-body);
     -webkit-user-select: none;
     user-select: none;
+    min-width: 0; /* <-- key fix: allow grid item to shrink below content size */
 }
 .app-icon {
     position: relative;
@@ -269,10 +270,12 @@ body {
     color: var(--muted);
     text-align: center;
     line-height: 1.25;
+    width: 100%; /* fill the tile instead of relying on max-width */
     max-width: 70px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    min-width: 0; /* just in case, belt & suspenders */
 }
 .ripple {
     position: absolute;
