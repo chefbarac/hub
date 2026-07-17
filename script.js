@@ -268,9 +268,7 @@ window.addEventListener("beforeinstallprompt", (e) => {
 
 installBtn.addEventListener("click", async () => {
     if (!deferredPrompt) return;
-    gtag("event", "button_click", {
-        button_name: "install_pwa",
-    });
+    gtag("event", "button_clicked_install_pwa");
     deferredPrompt.prompt();
     await deferredPrompt.userChoice;
     deferredPrompt = null;
@@ -278,6 +276,7 @@ installBtn.addEventListener("click", async () => {
 });
 
 window.addEventListener("appinstalled", () => {
+    gtag("event", "log_pwa_install_confirmed");
     installBtn.classList.remove("show");
     installHint.classList.remove("show");
 });
