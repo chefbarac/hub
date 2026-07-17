@@ -13,7 +13,7 @@ const APPS = [
     { id: "contact", name: "Contact", url: "mailto:chefrel.baracol@gmail.com", icon: "📧", textColor: "#F3E9D2", external: true, pinned: true },
     { id: "ukayfinds", name: "Ukay Finds", url: "https://chefbarac.github.io/ukayfinds/?source=hub", icon: "👕", textColor: "#4A90E2" },
     { id: "lifequote", name: "Life Quotes", url: "https://chefbarac.github.io/lifequote/?source=hub", icon: '""', textColor: "#111827" },
-    { id: "smartcalculator", name: "Smart Calculator", url: "https://chefbarac.github.io/smartcalculator/?source=hub", icon: '🧮', textColor: "#ff7b00" },
+    { id: "smartcalculator", name: "Smart Calcu", url: "https://chefbarac.github.io/smartcalculator/?source=hub", icon: '🧮', textColor: "#ff7b00" },
     { id: "iconprint", name: "Icon Print", url: "https://chefbarac.github.io/iconprint/?source=hub", icon: '🖨️', textColor: "#0062a8", external: true },
 ];
 

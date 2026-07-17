@@ -1,5 +1,5 @@
 const PREFIX = 'hub-cache';
-const CACHE_NAME = PREFIX + '-v1.1.3';
+const CACHE_NAME = PREFIX + '-v1.1.4';
 const SHELL = [
     './',
     './script.js',
