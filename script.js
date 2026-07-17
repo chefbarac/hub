@@ -15,6 +15,7 @@ const APPS = [
     { id: "lifequote", name: "Life Quotes", url: "https://chefbarac.github.io/lifequote/?source=hub", icon: '""', textColor: "#111827" },
     { id: "smartcalculator", name: "Smart Calcu", url: "https://chefbarac.github.io/smartcalculator/?source=hub", icon: '🧮', textColor: "#ff7b00" },
     { id: "iconprint", name: "Icon Print", url: "https://chefbarac.github.io/iconprint/?source=hub", icon: '🖨️', textColor: "#0062a8", external: true },
+    { id: "qrscanner", name: "QR Scanner", url: "https://chefbarac.github.io/qrscanner/?source=hub", icon: '📷', textColor: "#374a57" },
 ];
 
 document.addEventListener("DOMContentLoaded", () => {
