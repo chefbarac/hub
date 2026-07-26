@@ -16,6 +16,7 @@ const APPS = [
     { id: "smartcalculator", name: "Smart Calcu", url: "https://chefbarac.github.io/smartcalculator/?source=hub", icon: '🧮', textColor: "#ff7b00" },
     { id: "iconprint", name: "Icon Print", url: "https://chefbarac.github.io/iconprint/?source=hub", icon: '🖨️', textColor: "#0062a8", external: true },
     { id: "qrscanner", name: "QR Scanner", url: "https://chefbarac.github.io/qrscanner/?source=hub", icon: '📷', textColor: "#374a57" },
+    { id: "costing", name: "Costing", url: "https://chefbarac.github.io/costing/?source=hub", icon: '💸', textColor: "#008b45" },
 ];
 
 document.addEventListener("DOMContentLoaded", () => {
