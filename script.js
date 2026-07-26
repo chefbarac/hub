@@ -17,7 +17,7 @@ const APPS = [
     { id: "iconprint", name: "Icon Print", url: "https://chefbarac.github.io/iconprint/?source=hub", icon: '🖨️', textColor: "#0062a8", external: true },
     { id: "qrscanner", name: "QR Scanner", url: "https://chefbarac.github.io/qrscanner/?source=hub", icon: '📷', textColor: "#374a57" },
     { id: "costing", name: "Costing", url: "https://chefbarac.github.io/costing/?source=hub", icon: '💸', textColor: "#008b45" },
-    { id: "pos", name: "POS", url: "https://chefbarac.github.io/pos/?source=hub", icon: '🖥️', textColor: "#009bc2" },
+    { id: "pos", name: "POS", url: "https://chefbarac.github.io/pos/?source=hub", icon: '🖥️', textColor: "#009bc2", external: true },
 ];
 
 document.addEventListener("DOMContentLoaded", () => {
